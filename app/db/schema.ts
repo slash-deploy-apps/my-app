@@ -467,6 +467,8 @@ export const reviews = sqliteTable(
   ],
 );
 
+// ─── Messages (메시지) ────────────────────────────────────────────────────
+
 export const messages = sqliteTable(
   'messages',
   (d) => ({
@@ -485,8 +487,8 @@ export const messages = sqliteTable(
       .references(() => user.id),
     jobId: d.text({ length: 255 }).references(() => jobs.id),
     content: d.text().notNull(),
-    type: d.text({ length: 20 }).default('text').notNull(), // 'text' | 'proposal' | 'system'
-    metadata: d.text(), // JSON string for proposal/system data
+    type: d.text({ length: 20 }).default('text').notNull(),
+    metadata: d.text(),
     isRead: d.integer({ mode: 'number' }).default(0).notNull(),
     createdAt: d
       .integer({ mode: 'timestamp' })
@@ -498,7 +500,7 @@ export const messages = sqliteTable(
     index('messages_receiver_id_idx').on(t.receiverId),
     index('messages_job_id_idx').on(t.jobId),
   ],
-)
+);
 
 // ─── Relations ────────────────────────────────────────────────────────────
 
@@ -663,8 +665,8 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   job: one(jobs, { fields: [messages.jobId], references: [jobs.id] }),
 }));
 
-
 // ─── Contracts (계약) ─────────────────────────────────────────────────────
+
 export const contracts = sqliteTable(
   'contracts',
   (d) => ({
@@ -712,7 +714,7 @@ export const contracts = sqliteTable(
     index('contracts_job_id_idx').on(t.jobId),
     index('contracts_status_idx').on(t.status),
   ],
-)
+);
 
 export const contractsRelations = relations(contracts, ({ one }) => ({
   application: one(jobApplications, {

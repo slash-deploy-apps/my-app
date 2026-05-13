@@ -1,11 +1,11 @@
 import { Link, useLoaderData } from 'react-router';
-import { Briefcase, Menu } from 'lucide-react';
+import { Briefcase, Menu, MessageCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '~/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 
-export function Header({ user }: { user?: { id: string; name: string | null; email: string; role: string } | null }) {
+export function Header({ user, unreadMessages = 0 }: { user?: { id: string; name: string | null; email: string; role: string } | null; unreadMessages?: number }) {
   const navLinks = [
     { label: '일거리', href: '/jobs' },
     { label: '인력찾기', href: '/workers' },
@@ -30,6 +30,20 @@ export function Header({ user }: { user?: { id: string; name: string | null; ema
         </div>
 
         <div className='flex items-center gap-3'>
+          {user && (
+            <Link
+              to='/messages'
+              aria-label='메시지'
+              className='relative hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-[#7C3AED]/10 transition-all duration-200'
+            >
+              <MessageCircle className='h-5 w-5 text-[#332F3A]' />
+              {unreadMessages > 0 && (
+                <span className='absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#DB2777] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm'>
+                  {unreadMessages > 99 ? '99+' : unreadMessages}
+                </span>
+              )}
+            </Link>
+          )}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -49,6 +63,16 @@ export function Header({ user }: { user?: { id: string; name: string | null; ema
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to='/dashboard'>내 대시보드</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to='/messages' className='flex items-center justify-between'>
+                    <span>메시지</span>
+                    {unreadMessages > 0 && (
+                      <span className='ml-2 min-w-[18px] h-[18px] px-1 bg-[#DB2777] text-white text-[10px] font-bold rounded-full flex items-center justify-center'>
+                        {unreadMessages > 99 ? '99+' : unreadMessages}
+                      </span>
+                    )}
+                  </Link>
                 </DropdownMenuItem>
                 {user.role === 'worker' && (
                   <DropdownMenuItem asChild>
@@ -95,6 +119,14 @@ export function Header({ user }: { user?: { id: string; name: string | null; ema
                   {user ? (
                     <>
                       <Link to='/dashboard' className='block rounded-[20px] px-4 py-2 text-base font-medium text-[#635F69] hover:bg-[#7C3AED]/10'>대시보드</Link>
+                      <Link to='/messages' className='flex items-center justify-between rounded-[20px] px-4 py-2 text-base font-medium text-[#635F69] hover:bg-[#7C3AED]/10'>
+                        <span>메시지</span>
+                        {unreadMessages > 0 && (
+                          <span className='min-w-[18px] h-[18px] px-1 bg-[#DB2777] text-white text-[10px] font-bold rounded-full flex items-center justify-center'>
+                            {unreadMessages > 99 ? '99+' : unreadMessages}
+                          </span>
+                        )}
+                      </Link>
                       <form action='/logout' method='POST' className='block'><button type='submit' className='w-full text-left rounded-[20px] px-4 py-2 text-base font-medium text-[#635F69] hover:bg-[#7C3AED]/10'>로그아웃</button></form>
                     </>
                   ) : (
